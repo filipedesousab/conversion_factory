@@ -1,0 +1,10 @@
+name: "Development"
+on:
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  tests:
+    name: Tests
+    permissions:
+      contents: write
+    uses: ./.github/workflows/tests.yml

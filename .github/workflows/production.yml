@@ -1,0 +1,10 @@
+name: "Production"
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  tests:
+    name: Tests
+    permissions:
+      contents: write
+    uses: ./.github/workflows/tests.yml
