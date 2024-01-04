@@ -1,0 +1,14 @@
+require:
+  - rubocop-rake
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.5
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+
+Style/Documentation:
+  Enabled: false
