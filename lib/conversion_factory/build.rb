@@ -5,52 +5,39 @@ require 'tmpdir'
 
 module ConversionFactory
   class Build
-    attr_reader   :input, :content_type, :output_path, :converters
-    attr_accessor :output_filename
+    attr_reader :input_files, :output_path, :performers
 
-    def initialize(input: nil, content_type: nil, output_path: nil, output_filename: nil, converters: [])
-      self.input = input if input
-      self.content_type = content_type if content_type
+    def initialize(input_files: [], output_path: nil, performers: [])
+      self.input_files = input_files if input_files
       self.output_path = output_path
-      @output_filename = output_filename
-      self.converters = converters
+      self.performers = performers
     end
 
     def run
-      converters.map do |converter_params|
-        converter = converter_params[:converter]
-        convert_output_path = converter_params[:output_path] || output_path
-        convert_output_filename = converter_params[:output_filename] || output_filename
-
-        converter.convert(input: input, content_type: content_type, output_path: convert_output_path,
-                          output_filename: convert_output_filename)
+      input_files.each do |input_file|
+        performers.each do |performer|
+          performer.run(input_file)
+        end
       end
     end
 
-    def input=(input)
-      raise Errors::NonExistentFile unless File.exist?(input)
-
-      @input = input.is_a?(File) ? input : File.new(input)
-      set_content_type
-      @input # rubocop:disable Lint/Void
+    def input_files=(input_files)
+      @input_files = input_files.map do |input_file|
+        input_file.is_a?(Entities::InputFile) ? input_file : Entities::InputFile.new(**input_file)
+      end
     end
 
     def output_path=(output_path)
       @output_path = output_path ? Pathname.new(output_path) : Pathname.new(Dir.tmpdir)
     end
 
-    def content_type=(content_type)
-      @content_type = content_type || set_content_type
-    end
+    def performers=(performers)
+      @performers = performers.map do |performer_params|
+        performer_params = performer_params.transform_keys(&:to_sym)
+        convert_output_path = performer_params[:output_path] || output_path
 
-    def converters=(converters)
-      @converters = converters.map { |converter_params| converter_params.transform_keys(&:to_sym) }
-    end
-
-    private
-
-    def set_content_type
-      @content_type ||= FileMagic.mime.file(input.path, true) if input
+        Entities::Performer.new(**performer_params, output_path: convert_output_path)
+      end
     end
   end
 end
