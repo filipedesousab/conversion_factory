@@ -1,8 +1,8 @@
 # ConversionFactory
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/conversion_factory`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+ConversionFactory is a library that facilitates the conversion of multiple files with multiple converters.
+With ConversionFactory you can select several input files, even of different types and define different converters with their appropriate settings, in addition to being able to select the file storage location generally or individually for each file and converter.
+You may be wondering how a converter will be able to convert file types other than what it accepts. Each converter will only convert supported files, others will be ignored.
 
 ## Installation
 
@@ -22,23 +22,56 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Using ConversionFactory is quite simple. Basically an instance of the ConversionFactory is created passing a list of files to be converted and a list of converters.
 
-## Development
+```ruby
+converter = HTMLToImageConverter.new
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+conversion_factory = ConversionFactory.build(input_files: [{ file: '/path/to/file' }],
+                                             performers: [{ converter: converter }])
+conversion_factory.run
+```
+> Converters must follow an interface expected by the ConversionFactory, as mentioned later. You can create your own converter or use an available one.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Arguments expected by `ConversionFactory.build`
+|Argument   |Description                                                                                      |Required|Accepted types      |
+|-----------|-------------------------------------------------------------------------------------------------|--------|--------------------|
+|input_files|List of files to be converted with their arguments                                               |false   |Array               |
+|performers |List of converters with their arguments                                                          |false   |Array               |
+|output_path|Default output path. When not defined, the temporary path will be set to default, usually `/tmp`.|false   |[String \| Pathname]|
 
+Arguments expected by `input_files`
+|Argument        |Description                                                            |Required|Accepted types      |
+|----------------|-----------------------------------------------------------------------|--------|--------------------|
+|file            |File to be converted                                                   |true    |[String \| Pathname]|
+|content_type    |MIME type of the file. When not defined, it is automatically identified|false   |String              |
+|output_path     |File output path                                                       |false   |[String \| Pathname]|
+|output_filename |Generated file name                                                    |false   |String              |
+
+Arguments expected by `performers`
+|Argument        |Description         |Required|Accepted types      |
+|----------------|--------------------|--------|--------------------|
+|converter       |Converter to be used|true    |Object              |
+|output_path     |File output path    |false   |[String \| Pathname]|
+
+### Converter
+
+The converter must have at least one method called `convert` that receives input, content_type, output_path and output_filename as keyword arguments.
+
+Example of a converter
+
+```ruby
+class HTMLToImageConverter
+  ACCEPTED_TYPES = ['text/html'].freeze
+
+  def convert(input:, content_type: nil, output_path: nil, output_filename: nil)
+    raise ConversionFactory::Errors::InvalidType unless ACCEPTED_TYPES.include?(content_type)
+
+    kit = IMGKit.new(File.new(input))
+    kit.to_file("#{output_path}/#{output_filename}.jpg")
+  end
+end
+```
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/conversion_factory. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/conversion_factory/blob/master/CODE_OF_CONDUCT.md).
-
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the ConversionFactory project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/conversion_factory/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/filipedesousab/conversion_factory. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/filipedesousab/conversion_factory/blob/main/CODE_OF_CONDUCT.md).
