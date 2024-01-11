@@ -10,6 +10,24 @@ RSpec.describe ConversionFactory do
     expect(ConversionFactory::VERSION).not_to be_nil
   end
 
+  describe '#configuration' do
+    context 'when the configuration is default' do
+      it { expect(described_class.configuration.output_path.to_s).to eq(Dir.tmpdir) }
+    end
+
+    context 'when the configuration is set' do
+      it do
+        output_path = '/tmp/output_path'
+
+        described_class.configure do |config|
+          config.output_path = output_path
+        end
+
+        expect(described_class.configuration.output_path.to_s).to eq(output_path)
+      end
+    end
+  end
+
   describe '#input_files' do
     context 'when the input is a string' do
       let(:conversion_factory) { described_class.build(input_files: [{ file: input_file_path }]) }
@@ -41,7 +59,7 @@ RSpec.describe ConversionFactory do
       let(:conversion_factory) { described_class.build }
 
       it { expect(conversion_factory.output_path.class).to eq(Pathname) }
-      it { expect(conversion_factory.output_path.to_s).to eq(Dir.tmpdir) }
+      it { expect(conversion_factory.output_path.to_s).to eq(described_class.configuration.output_path.to_s) }
     end
 
     context 'when output_path is passed by argument' do
