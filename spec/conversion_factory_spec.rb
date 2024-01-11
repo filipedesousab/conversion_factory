@@ -59,7 +59,7 @@ RSpec.describe ConversionFactory do
       let(:conversion_factory) { described_class.build }
 
       it { expect(conversion_factory.output_path.class).to eq(Pathname) }
-      it { expect(conversion_factory.output_path.to_s).to eq(Dir.tmpdir) }
+      it { expect(conversion_factory.output_path.to_s).to eq(described_class.configuration.output_path.to_s) }
     end
 
     context 'when output_path is passed by argument' do

@@ -28,7 +28,7 @@ module ConversionFactory
     end
 
     def output_path=(output_path)
-      @output_path = output_path ? Pathname.new(output_path) : Pathname.new(Dir.tmpdir)
+      @output_path = output_path ? Pathname.new(output_path) : ConversionFactory.configuration.output_path
     end
 
     def performers=(performers)
