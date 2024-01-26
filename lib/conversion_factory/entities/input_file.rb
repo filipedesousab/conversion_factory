@@ -17,9 +17,9 @@ module ConversionFactory
       end
 
       def file=(file)
-        raise Errors::NonExistentFile unless File.exist?(file)
+        raise Errors::NonExistentFile unless Pathname.new(file).file?
 
-        @file = file.is_a?(File) ? file : File.new(file)
+        @file = file.is_a?(Pathname) ? file : Pathname.new(file)
         set_content_type
         @file # rubocop:disable Lint/Void
       end
@@ -35,7 +35,7 @@ module ConversionFactory
       private
 
       def set_content_type
-        @content_type ||= FileMagic.mime.file(file.path, true) if file
+        @content_type ||= FileMagic.mime.file(file.to_s, true) if file
       end
     end
   end
