@@ -18,6 +18,13 @@ RSpec.describe ConversionFactory::Entities::InputFile do
       it { expect(input_file.file.to_s).to eq(file_path) }
     end
 
+    context 'when the file is a FIle object' do
+      let(:input_file) { described_class.new(file: File.new(file_path)) }
+
+      it { expect(input_file.file.class).to eq(Pathname) }
+      it { expect(input_file.file.to_s).to eq(file_path) }
+    end
+
     context 'when the file is assigned' do
       it do
         input_file = described_class.new(file: file_path)
