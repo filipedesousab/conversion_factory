@@ -8,7 +8,7 @@ class HTMLToImageConverter
   def convert(input:, content_type: nil, output_path: nil, output_filename: nil)
     raise Errors::InvalidType unless ACCEPTED_TYPES.include?(content_type)
 
-    puts generate_message(input_file_path: input.path, output_path: output_path, output_filename: output_filename)
+    puts generate_message(input_file_path: input.to_s, output_path: output_path, output_filename: output_filename)
     @success = true
   end
 

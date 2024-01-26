@@ -7,15 +7,15 @@ RSpec.describe ConversionFactory::Entities::InputFile do
     context 'when the file is a string' do
       let(:input_file) { described_class.new(file: file_path) }
 
-      it { expect(input_file.file.class).to eq(File) }
-      it { expect(input_file.file.path).to eq(file_path) }
+      it { expect(input_file.file.class).to eq(Pathname) }
+      it { expect(input_file.file.to_s).to eq(file_path) }
     end
 
-    context 'when the file is a File object' do
-      let(:input_file) { described_class.new(file: File.new(file_path)) }
+    context 'when the file is a Pathname object' do
+      let(:input_file) { described_class.new(file: Pathname.new(file_path)) }
 
-      it { expect(input_file.file.class).to eq(File) }
-      it { expect(input_file.file.path).to eq(file_path) }
+      it { expect(input_file.file.class).to eq(Pathname) }
+      it { expect(input_file.file.to_s).to eq(file_path) }
     end
 
     context 'when the file is assigned' do
@@ -23,7 +23,7 @@ RSpec.describe ConversionFactory::Entities::InputFile do
         input_file = described_class.new(file: file_path)
         input_file.file = __FILE__
 
-        expect(input_file.file.path).to eq(__FILE__)
+        expect(input_file.file.to_s).to eq(__FILE__)
       end
     end
 

@@ -33,7 +33,7 @@ RSpec.describe ConversionFactory do
       let(:conversion_factory) { described_class.build(input_files: [{ file: input_file_path }]) }
 
       it { expect(conversion_factory.input_files.first.class).to eq(ConversionFactory::Entities::InputFile) }
-      it { expect(conversion_factory.input_files.first.file.path).to eq(input_file_path) }
+      it { expect(conversion_factory.input_files.first.file.to_s).to eq(input_file_path) }
     end
 
     context 'when the input is a InputFile object' do
@@ -41,7 +41,7 @@ RSpec.describe ConversionFactory do
       let(:conversion_factory) { described_class.build(input_files: [input_file]) }
 
       it { expect(conversion_factory.input_files.first.class).to eq(ConversionFactory::Entities::InputFile) }
-      it { expect(conversion_factory.input_files.first.file.path).to eq(input_file_path) }
+      it { expect(conversion_factory.input_files.first.file.to_s).to eq(input_file_path) }
     end
 
     context 'when the input is assigned' do
@@ -49,7 +49,7 @@ RSpec.describe ConversionFactory do
         conversion_factory = described_class.build(input_files: [{ file: input_file_path }])
         conversion_factory.input_files = [{ file: __FILE__ }]
 
-        expect(conversion_factory.input_files.first.file.path).to eq(__FILE__)
+        expect(conversion_factory.input_files.first.file.to_s).to eq(__FILE__)
       end
     end
   end
