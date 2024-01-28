@@ -19,7 +19,7 @@ module ConversionFactory
       def file=(file)
         raise Errors::NonExistentFile unless Pathname.new(file).file?
 
-        @file = file.is_a?(Pathname) ? file : Pathname.new(file)
+        @file = Pathname.new(file)
         set_content_type
         @file # rubocop:disable Lint/Void
       end
@@ -29,7 +29,7 @@ module ConversionFactory
       end
 
       def output_path=(output_path)
-        @output_path = output_path.is_a?(Pathname) ? output_path : Pathname.new(output_path)
+        @output_path = Pathname.new(output_path)
       end
 
       private

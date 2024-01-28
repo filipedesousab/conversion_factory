@@ -12,7 +12,7 @@ module ConversionFactory
       end
 
       def output_path=(output_path)
-        @output_path = output_path.is_a?(Pathname) ? output_path : Pathname.new(output_path)
+        @output_path = Pathname.new(output_path)
       end
 
       def run(input_file)
