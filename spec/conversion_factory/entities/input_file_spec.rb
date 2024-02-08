@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe ConversionFactory::Entities::InputFile do
-  let(:file_path) { 'spec/fixtures/text-plain.html' }
+  let(:filename) { 'text-plain.html' }
+  let(:file_path) { "spec/fixtures/#{filename}" }
 
   describe '#file' do
     context 'when the file is a string' do
@@ -102,6 +103,14 @@ RSpec.describe ConversionFactory::Entities::InputFile do
   end
 
   describe '#output_filename' do
+    context 'when it automatically identifies' do
+      it do
+        input_file = described_class.new(file: file_path)
+
+        expect(input_file.output_filename).to eq(filename)
+      end
+    end
+
     context 'when output_filename is passed by argument' do
       it do
         output_filename = 'file1'
