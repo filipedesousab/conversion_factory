@@ -6,6 +6,11 @@ RSpec.describe ConversionFactory do
   let(:input_file_path) { 'spec/fixtures/text-plain.html' }
   let(:converter) { HTMLToImageConverter.new }
 
+  after do
+    described_class.configuration.output_path = Dir.tmpdir
+    described_class.configuration.raise_exception = true
+  end
+
   it 'has a version number' do
     expect(ConversionFactory::VERSION).not_to be_nil
   end
@@ -25,8 +30,6 @@ RSpec.describe ConversionFactory do
           config.raise_exception = false
         end
       end
-
-      after { described_class.configuration.raise_exception = true }
 
       it { expect(described_class.configuration.output_path.to_s).to eq(output_path) }
       it { expect(described_class.configuration.raise_exception).to be(false) }
@@ -55,6 +58,23 @@ RSpec.describe ConversionFactory do
         conversion_factory.input_files = [{ file: __FILE__ }]
 
         expect(conversion_factory.input_files.first.file.to_s).to eq(__FILE__)
+      end
+    end
+
+    context 'when the file is not found' do
+      file_path = 'spec/fixtures/non_existent_file.html'
+
+      it do
+        expect do
+          described_class.build(input_files: [{ file: file_path }])
+        end.to raise_error(ConversionFactory::Errors::NonExistentFile)
+      end
+
+      it do
+        described_class.configuration.raise_exception = false
+        conversion_factory = described_class.build(input_files: [{ file: file_path }])
+
+        expect(conversion_factory.errors.first.class).to be(ConversionFactory::Errors::NonExistentFile)
       end
     end
   end
@@ -152,6 +172,26 @@ RSpec.describe ConversionFactory do
                                              output_filename: output_filename)
 
         expect { conversion_factory.run }.to output(a_string_including(message)).to_stdout
+      end
+    end
+
+    context 'when the output_path is not found' do
+      let(:conversion_factory) do
+        described_class.build(input_files: [{ file: input_file_path }],
+                              performers: [{ converter: converter }])
+      end
+
+      before { described_class.configuration.output_path = nil }
+
+      it do
+        expect { conversion_factory.run }.to raise_error(ConversionFactory::Errors::EmptyOutputPath)
+      end
+
+      it do
+        described_class.configuration.raise_exception = false
+        conversion_factory.run
+
+        expect(conversion_factory.errors.first.class).to be(ConversionFactory::Errors::EmptyOutputPath)
       end
     end
   end
