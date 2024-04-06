@@ -7,7 +7,7 @@ require_relative 'errors/empty_output_path'
 module ConversionFactory
   class ErrorList < Array
     def to_s
-      map { |item| "#{item.class}: #{item.message}" }
+      map(&:message)
     end
   end
 
