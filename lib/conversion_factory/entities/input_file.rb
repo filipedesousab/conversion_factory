@@ -16,7 +16,8 @@ module ConversionFactory
       end
 
       def file=(file)
-        raise Errors::NonExistentFile unless Pathname.new(file).file?
+        raise Errors::NonExistentFile, "Non existent file to path #{file}" \
+          unless Pathname.new(file).file?
 
         @file = Pathname.new(file)
         set_content_type

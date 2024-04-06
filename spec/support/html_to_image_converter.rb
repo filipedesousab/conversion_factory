@@ -5,6 +5,10 @@ class HTMLToImageConverter
 
   ACCEPTED_TYPES = ['text/html'].freeze
 
+  def name
+    'HTMLToImage'
+  end
+
   def convert(input:, content_type: nil, output_path: nil, output_filename: nil)
     raise Errors::InvalidType unless ACCEPTED_TYPES.include?(content_type)
 

@@ -2,9 +2,12 @@
 
 require 'ruby-filemagic'
 require 'tmpdir'
+require_relative 'errors'
 
 module ConversionFactory
   class Build
+    include ConversionFactory::Errors
+
     attr_reader :input_files, :output_path, :performers
 
     def initialize(input_files: [], output_path: nil, performers: [])
@@ -17,6 +20,10 @@ module ConversionFactory
       input_files.each do |input_file|
         performers.each do |performer|
           performer.run(input_file)
+        rescue StandardError => e
+          push_error(e)
+
+          raise e if ConversionFactory.configuration.raise_exception
         end
       end
     end
@@ -24,6 +31,10 @@ module ConversionFactory
     def input_files=(input_files)
       @input_files = input_files.map do |input_file|
         input_file.is_a?(Entities::InputFile) ? input_file : Entities::InputFile.new(**input_file)
+      rescue StandardError => e
+        push_error(e)
+
+        raise e if ConversionFactory.configuration.raise_exception
       end
     end
 

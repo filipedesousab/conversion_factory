@@ -24,10 +24,15 @@ module ConversionFactory
 
       private
 
+      def converter_name
+        converter.name || converter.class
+      end
+
       def prepare_output_path(input_file)
         convert_output_path = input_file.output_path || output_path
 
-        raise Errors::EmptyOutputPath unless convert_output_path
+        raise Errors::EmptyOutputPath, "Empty output path to #{input_file.file} and #{converter_name}" \
+          unless convert_output_path
 
         convert_output_path.mkdir unless convert_output_path.exist?
         convert_output_path
