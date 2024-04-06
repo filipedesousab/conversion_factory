@@ -58,7 +58,7 @@ RSpec.describe ConversionFactory::Entities::Performer do
 
         expect { performer.run(input_file) }.to raise_error(
           ConversionFactory::Errors::EmptyOutputPath,
-          "Empty output path to #{input_file.file} and #{converter.class}"
+          "Empty output path to #{input_file.file} and #{converter.name}"
         )
       end
     end
