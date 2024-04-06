@@ -13,18 +13,23 @@ RSpec.describe ConversionFactory do
   describe '#configuration' do
     context 'when the configuration is default' do
       it { expect(described_class.configuration.output_path.to_s).to eq(Dir.tmpdir) }
+      it { expect(described_class.configuration.raise_exception).to be(true) }
     end
 
     context 'when the configuration is set' do
-      it do
-        output_path = '/tmp/output_path'
+      let(:output_path) { '/tmp/output_path' }
 
+      before do
         described_class.configure do |config|
           config.output_path = output_path
+          config.raise_exception = false
         end
-
-        expect(described_class.configuration.output_path.to_s).to eq(output_path)
       end
+
+      after { described_class.configuration.raise_exception = true }
+
+      it { expect(described_class.configuration.output_path.to_s).to eq(output_path) }
+      it { expect(described_class.configuration.raise_exception).to be(false) }
     end
   end
 
