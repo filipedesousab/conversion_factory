@@ -51,18 +51,66 @@ Arguments expected by `input_files`
 Arguments expected by `performers`
 |Argument        |Description         |Required|Accepted types      |
 |----------------|--------------------|--------|--------------------|
-|converter       |Converter to be used|true    |Object              |
+|converter       |Converter to be used|true    |Converter Object    |
 |output_path     |File output path    |false   |[String \| Pathname]|
+
+### Errors output
+
+By default errors are generated, but it is possible to disable them by setting the raise_exception setting to false.
+
+The errors are
+|Error                                     |Message                                             |
+|------------------------------------------|----------------------------------------------------|
+|ConversionFactory::Errors::NonExistentFile|Non existent file to path /path/to/non_existent_file|
+|ConversionFactory::Errors::EmptyOutputPath|Empty output path to /path/to/file and ConverterName|
+
+Erros can be accessed through the errors method of the builded instance of ConversionFactory.
+The errors method return a list of errors generated during the execution of compilation.
+The errors method can return a list of errors messages using the `to_s` method.
+
+```ruby
+conversion_factory = ConversionFactory.build(...)
+conversion_factory.run
+conversion_factory.errors # [#<ConversionFactory::Errors::NonExistentFile: Non existent file to path /path/to/non_existent_file>, #<StandardError: Lorem ipsum...>]
+conversion_factory.errors.to_s # ["Non existent file to path /path/to/non_existent_file", "Lorem ipsum..."]
+```
+
+### Configuration
+
+Is possible change default values configurations.
+
+|Config         |Default value|Accepted types      |Description                                                                                                                               |
+|---------------|-------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+|output_path    |Dir.tmpdir   |[String \| Pathname]|Output of converted files. It works globally, but will be overwritten if the output_path is defined in the performer or in the input_file|
+|raise_exception|true         |boolean             |By default, errors are generated, but it is possible to disable them through this configuration|
+
+```ruby
+# config/initializers/conversion_factory.rb
+
+ConversionFactory.configure do |config|
+  config.output_path = 'output/path'
+  config.raise_exception = false
+end
+```
 
 ### Converter
 
 The converter must have at least one method called `convert` that receives input, content_type, output_path and output_filename as keyword arguments.
+
+|Method |Required|Description                                                                                                     |
+|-------|--------|----------------------------------------------------------------------------------------------------------------|
+|name   |true    |Converter name to be displayed in messages                                                                      |
+|convert|true    |Processes the conversion. Must receive input, content_type, output_path and output_filename as keyword arguments|
 
 Example of a converter
 
 ```ruby
 class HTMLToImageConverter
   ACCEPTED_TYPES = ['text/html'].freeze
+
+  def name
+    'HTMLToImageConverter'
+  end
 
   def convert(input:, content_type: nil, output_path: nil, output_filename: nil)
     raise ConversionFactory::Errors::InvalidType unless ACCEPTED_TYPES.include?(content_type)
