@@ -39,9 +39,10 @@ RSpec.describe ConversionFactory::Entities::InputFile do
       it do
         file_path = 'spec/fixtures/non_existent_file.html'
 
-        expect do
-          described_class.new(file: file_path)
-        end.to raise_error(ConversionFactory::Errors::NonExistentFile)
+        expect { described_class.new(file: file_path) }.to raise_error(
+          ConversionFactory::Errors::NonExistentFile,
+          "Non existent file to path #{file_path}"
+        )
       end
     end
   end
