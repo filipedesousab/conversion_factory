@@ -7,12 +7,14 @@ module ConversionFactory
   module Entities
     class InputFile
       attr_reader :file, :content_type, :output_path, :output_filename
+      attr_accessor :output_extension
 
-      def initialize(file: nil, content_type: nil, output_path: nil, output_filename: nil)
+      def initialize(file: nil, content_type: nil, output_path: nil, output_filename: nil, output_extension: nil)
         self.file = file if file
         self.content_type = content_type if content_type
         self.output_path = output_path if output_path
         self.output_filename = output_filename
+        @output_extension = output_extension
       end
 
       def file=(file)
@@ -44,7 +46,7 @@ module ConversionFactory
       end
 
       def set_output_filename
-        @output_filename = file&.basename&.to_s
+        @output_filename = file&.basename(file&.extname)&.to_s
       end
     end
   end

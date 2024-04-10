@@ -51,10 +51,30 @@ RSpec.describe ConversionFactory::Entities::Performer do
     end
   end
 
+  describe '#output_extension' do
+    context 'when output_extension is passed by argument' do
+      it do
+        output_extension = 'jpg'
+        performer = described_class.new(output_extension: output_extension)
+
+        expect(performer.output_extension).to eq(output_extension)
+      end
+    end
+
+    context 'when the output_extension is assigned' do
+      it do
+        performer = described_class.new(output_extension: 'jpg')
+        performer.output_extension = another_output_extension = 'png'
+
+        expect(performer.output_extension.to_s).to eq(another_output_extension)
+      end
+    end
+  end
+
   describe '#run' do
     context 'when you dont have the output_path' do
       it do
-        performer = described_class.new(converter: converter)
+        performer = described_class.new(converter: converter, output_extension: 'xyz')
 
         expect { performer.run(input_file) }.to raise_error(
           ConversionFactory::Errors::EmptyOutputPath,
@@ -63,8 +83,19 @@ RSpec.describe ConversionFactory::Entities::Performer do
       end
     end
 
+    context 'when you dont have the output_extension' do
+      it do
+        performer = described_class.new(converter: converter, output_path: output_path)
+
+        expect { performer.run(input_file) }.to raise_error(
+          ConversionFactory::Errors::EmptyOutputExtension,
+          "Empty output extension to #{input_file.file} and #{converter.name}"
+        )
+      end
+    end
+
     context 'when arguments are valid' do
-      let(:performer) { described_class.new(converter: converter, output_path: output_path) }
+      let(:performer) { described_class.new(converter: converter, output_path: output_path, output_extension: 'xyz') }
 
       before { performer.run(input_file) }
 
