@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'errors/invalid_type'
+require_relative 'errors/invalid_input_type'
+require_relative 'errors/invalid_output_type'
 require_relative 'errors/non_existent_file'
 require_relative 'errors/empty_output_path'
+require_relative 'errors/empty_output_extension'
+require_relative 'errors/empty_output_type'
 
 module ConversionFactory
   class ErrorList < Array

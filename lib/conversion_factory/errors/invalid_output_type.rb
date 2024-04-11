@@ -2,6 +2,6 @@
 
 module ConversionFactory
   module Errors
-    class InvalidType < StandardError; end
+    class InvalidOutputType < StandardError; end
   end
 end

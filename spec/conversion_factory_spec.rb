@@ -147,7 +147,16 @@ RSpec.describe ConversionFactory do
     end
   end
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
   describe '#run' do
+    let(:output_path) { '/tmp/output_path' }
+    let(:another_output_path) { '/tmp/another_output_path' }
+    let(:output_filename) { 'file1' }
+    let(:output_extension) { 'xyz' }
+    let(:another_output_extension) { 'zzz' }
+    let(:output_type) { 'png' }
+    let(:another_output_type) { 'jpeg' }
+
     context 'when the performers were not passed' do
       it do
         conversion_factory = described_class.build
@@ -156,20 +165,37 @@ RSpec.describe ConversionFactory do
       end
     end
 
-    context 'when passed a input_files with params' do
-      let(:output_path) { '/tmp/output_path' }
-      let(:output_filename) { 'file1' }
+    context 'when passed a performer with params' do
       let(:conversion_factory) do
-        described_class.build(input_files: [{ file: input_file_path, output_path: output_path,
-                                              output_filename: output_filename }],
-                              performers: [{ converter: converter }])
+        described_class.build(input_files: [{ file: input_file_path, output_filename: output_filename }],
+                              performers: [{ converter: converter, output_path: output_path,
+                                             output_extension: output_extension, output_type: output_type }])
       end
-
-      before { conversion_factory.run }
 
       it do
         message = converter.generate_message(input_file_path: input_file_path, output_path: output_path,
-                                             output_filename: output_filename)
+                                             output_filename: output_filename, output_extension: output_extension,
+                                             output_type: output_type)
+
+        expect { conversion_factory.run }.to output(a_string_including(message)).to_stdout
+      end
+    end
+
+    context 'when passed a input_file with params' do
+      let(:conversion_factory) do
+        described_class.build(input_files: [{ file: input_file_path, output_path: another_output_path,
+                                              output_filename: output_filename,
+                                              output_extension: another_output_extension,
+                                              output_type: another_output_type }],
+                              performers: [{ converter: converter, output_path: output_path,
+                                             output_extension: output_extension, output_type: output_type }])
+      end
+
+      it do
+        message = converter.generate_message(input_file_path: input_file_path, output_path: another_output_path,
+                                             output_filename: output_filename,
+                                             output_extension: another_output_extension,
+                                             output_type: another_output_type)
 
         expect { conversion_factory.run }.to output(a_string_including(message)).to_stdout
       end
@@ -195,4 +221,5 @@ RSpec.describe ConversionFactory do
       end
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end

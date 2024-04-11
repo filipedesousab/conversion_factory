@@ -47,22 +47,30 @@ Arguments expected by `input_files`
 |content_type    |MIME type of the file. When not defined, it is automatically identified|false   |String              |
 |output_path     |File output path                                                       |false   |[String \| Pathname]|
 |output_filename |Generated file name                                                    |false   |String              |
+|output_extension|Generated file extension                                               |false   |String              |
+|output_type     |Generated file type                                                    |false   |String              |
 
 Arguments expected by `performers`
-|Argument        |Description         |Required|Accepted types      |
-|----------------|--------------------|--------|--------------------|
-|converter       |Converter to be used|true    |Converter Object    |
-|output_path     |File output path    |false   |[String \| Pathname]|
+|Argument        |Description          |Required|Accepted types      |
+|----------------|---------------------|--------|--------------------|
+|converter       |Converter to be used |true    |Converter Object    |
+|output_path     |File output path     |false   |[String \| Pathname]|
+|output_extension|File output extension|false   |String              |
+|output_type     |File output type     |false   |String              |
 
 ### Errors output
 
 By default errors are generated, but it is possible to disable them by setting the raise_exception setting to false.
 
 The errors are
-|Error                                     |Message                                             |
-|------------------------------------------|----------------------------------------------------|
-|ConversionFactory::Errors::NonExistentFile|Non existent file to path /path/to/non_existent_file|
-|ConversionFactory::Errors::EmptyOutputPath|Empty output path to /path/to/file and ConverterName|
+|Error                                          |Message                                                  |
+|-----------------------------------------------|---------------------------------------------------------|
+|ConversionFactory::Errors::EmptyOutputExtension|Empty output extension to /path/to/file and ConverterName|
+|ConversionFactory::Errors::EmptyOutputPath     |Empty output path to /path/to/file and ConverterName     |
+|ConversionFactory::Errors::EmptyOutputType     |Empty output type to /path/to/file and ConverterName     |
+|ConversionFactory::Errors::InvalidInputType    |                                                         |
+|ConversionFactory::Errors::InvalidOutputType   |                                                         |
+|ConversionFactory::Errors::NonExistentFile     |Non existent file to path /path/to/non_existent_file     |
 
 Erros can be accessed through the errors method of the builded instance of ConversionFactory.
 The errors method return a list of errors generated during the execution of compilation.
@@ -97,26 +105,39 @@ end
 
 The converter must have at least one method called `convert` that receives input, content_type, output_path and output_filename as keyword arguments.
 
-|Method |Required|Description                                                                                                     |
-|-------|--------|----------------------------------------------------------------------------------------------------------------|
-|name   |true    |Converter name to be displayed in messages                                                                      |
-|convert|true    |Processes the conversion. Must receive input, content_type, output_path and output_filename as keyword arguments|
+|Method                  |Required|Description                                                                                                     |
+|------------------------|--------|----------------------------------------------------------------------------------------------------------------|
+|name                    |true    |Converter name to be displayed in messages                                                                      |
+|convert                 |true    |Processes the conversion. Must receive input, content_type, output_path and output_filename as keyword arguments|
+|default_output_type     |true    |Converter default output type                                                                                   |
+|default_output_extension|true    |Converter default output extension                                                                              |
 
 Example of a converter
 
 ```ruby
 class HTMLToImageConverter
-  ACCEPTED_TYPES = ['text/html'].freeze
+  ACCEPTED_INPUT_TYPES = ['text/html'].freeze
+  ACCEPTED_OUTPUT_TYPES = %w[jpeg png].freeze
 
   def name
     'HTMLToImageConverter'
   end
 
-  def convert(input:, content_type: nil, output_path: nil, output_filename: nil)
-    raise ConversionFactory::Errors::InvalidType unless ACCEPTED_TYPES.include?(content_type)
+  def default_output_type
+    'jpeg'
+  end
+
+  def default_output_extension
+    'jpg'
+  end
+
+  def convert(input:, content_type: nil, output_path: nil, output_filename: nil, output_extension: nil, output_type: nil)
+    raise ConversionFactory::Errors::InvalidInputType unless ACCEPTED_INPUT_TYPES.include?(content_type.to_s)
+    raise ConversionFactory::Errors::InvalidOutputType unless ACCEPTED_OUTPUT_TYPES.include?(output_type.to_s)
 
     kit = IMGKit.new(File.new(input))
-    kit.to_file("#{output_path}/#{output_filename}.jpg")
+    kit = kit.to_img(output_type.to_sym)
+    kit.to_file("#{output_path}/#{output_filename}.#{output_extension || output_type}")
   end
 end
 ```
