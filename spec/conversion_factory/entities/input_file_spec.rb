@@ -150,4 +150,24 @@ RSpec.describe ConversionFactory::Entities::InputFile do
       end
     end
   end
+
+  describe '#output_type' do
+    context 'when output_type is passed by argument' do
+      it do
+        output_type = 'jpeg'
+        input_file = described_class.new(output_type: output_type)
+
+        expect(input_file.output_type).to eq(output_type)
+      end
+    end
+
+    context 'when the output_type is assigned' do
+      it do
+        input_file = described_class.new
+        input_file.output_type = output_type = 'jpg'
+
+        expect(input_file.output_type).to eq(output_type)
+      end
+    end
+  end
 end

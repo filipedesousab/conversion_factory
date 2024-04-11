@@ -7,14 +7,16 @@ module ConversionFactory
   module Entities
     class InputFile
       attr_reader :file, :content_type, :output_path, :output_filename
-      attr_accessor :output_extension
+      attr_accessor :output_extension, :output_type
 
-      def initialize(file: nil, content_type: nil, output_path: nil, output_filename: nil, output_extension: nil)
+      def initialize(file: nil, content_type: nil, output_path: nil, output_filename: nil, # rubocop:disable Metrics/ParameterLists
+                     output_extension: nil, output_type: nil)
         self.file = file if file
         self.content_type = content_type if content_type
         self.output_path = output_path if output_path
         self.output_filename = output_filename
         @output_extension = output_extension
+        @output_type = output_type
       end
 
       def file=(file)

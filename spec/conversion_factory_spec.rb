@@ -154,6 +154,8 @@ RSpec.describe ConversionFactory do
     let(:output_filename) { 'file1' }
     let(:output_extension) { 'xyz' }
     let(:another_output_extension) { 'zzz' }
+    let(:output_type) { 'png' }
+    let(:another_output_type) { 'jpeg' }
 
     context 'when the performers were not passed' do
       it do
@@ -167,12 +169,13 @@ RSpec.describe ConversionFactory do
       let(:conversion_factory) do
         described_class.build(input_files: [{ file: input_file_path, output_filename: output_filename }],
                               performers: [{ converter: converter, output_path: output_path,
-                                             output_extension: output_extension }])
+                                             output_extension: output_extension, output_type: output_type }])
       end
 
       it do
         message = converter.generate_message(input_file_path: input_file_path, output_path: output_path,
-                                             output_filename: output_filename, output_extension: output_extension)
+                                             output_filename: output_filename, output_extension: output_extension,
+                                             output_type: output_type)
 
         expect { conversion_factory.run }.to output(a_string_including(message)).to_stdout
       end
@@ -182,15 +185,17 @@ RSpec.describe ConversionFactory do
       let(:conversion_factory) do
         described_class.build(input_files: [{ file: input_file_path, output_path: another_output_path,
                                               output_filename: output_filename,
-                                              output_extension: another_output_extension }],
+                                              output_extension: another_output_extension,
+                                              output_type: another_output_type }],
                               performers: [{ converter: converter, output_path: output_path,
-                                             output_extension: output_extension }])
+                                             output_extension: output_extension, output_type: output_type }])
       end
 
       it do
         message = converter.generate_message(input_file_path: input_file_path, output_path: another_output_path,
                                              output_filename: output_filename,
-                                             output_extension: another_output_extension)
+                                             output_extension: another_output_extension,
+                                             output_type: another_output_type)
 
         expect { conversion_factory.run }.to output(a_string_including(message)).to_stdout
       end
