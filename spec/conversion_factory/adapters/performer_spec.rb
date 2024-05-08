@@ -2,11 +2,11 @@
 
 require_relative '../../support/html_to_image_converter'
 
-RSpec.describe ConversionFactory::Entities::Performer do
+RSpec.describe ConversionFactory::Adapters::Performer do
   let(:converter) { HTMLToImageConverter.new }
   let(:output_path) { "#{File.dirname(__FILE__)}/../../support/tmp" }
   let(:file_path) { 'spec/fixtures/text-plain.html' }
-  let(:input_file) { ConversionFactory::Entities::InputFile.new(file: file_path) }
+  let(:input_file) { ConversionFactory::Adapters::InputFile.new(file: file_path) }
 
   describe '#converter' do
     context 'when converter is passed by argument' do

@@ -30,7 +30,7 @@ module ConversionFactory
 
     def input_files=(input_files)
       @input_files = input_files.map do |input_file|
-        input_file.is_a?(Entities::InputFile) ? input_file : Entities::InputFile.new(**input_file)
+        input_file.is_a?(Adapters::InputFile) ? input_file : Adapters::InputFile.new(**input_file)
       rescue StandardError => e
         push_error(e)
 
@@ -47,7 +47,7 @@ module ConversionFactory
         performer_params = performer_params.transform_keys(&:to_sym)
         convert_output_path = performer_params[:output_path] || output_path
 
-        Entities::Performer.new(**performer_params, output_path: convert_output_path)
+        Adapters::Performer.new(**performer_params, output_path: convert_output_path)
       end
     end
   end

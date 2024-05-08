@@ -40,15 +40,15 @@ RSpec.describe ConversionFactory do
     context 'when the input is a string' do
       let(:conversion_factory) { described_class.build(input_files: [{ file: input_file_path }]) }
 
-      it { expect(conversion_factory.input_files.first.class).to eq(ConversionFactory::Entities::InputFile) }
+      it { expect(conversion_factory.input_files.first.class).to eq(ConversionFactory::Adapters::InputFile) }
       it { expect(conversion_factory.input_files.first.file.to_s).to eq(input_file_path) }
     end
 
     context 'when the input is a InputFile object' do
-      let(:input_file) { ConversionFactory::Entities::InputFile.new(file: input_file_path) }
+      let(:input_file) { ConversionFactory::Adapters::InputFile.new(file: input_file_path) }
       let(:conversion_factory) { described_class.build(input_files: [input_file]) }
 
-      it { expect(conversion_factory.input_files.first.class).to eq(ConversionFactory::Entities::InputFile) }
+      it { expect(conversion_factory.input_files.first.class).to eq(ConversionFactory::Adapters::InputFile) }
       it { expect(conversion_factory.input_files.first.file.to_s).to eq(input_file_path) }
     end
 
