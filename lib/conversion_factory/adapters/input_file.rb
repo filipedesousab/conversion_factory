@@ -4,7 +4,7 @@ require 'ruby-filemagic'
 require 'tmpdir'
 
 module ConversionFactory
-  module Entities
+  module Adapters
     class InputFile
       attr_reader :file, :content_type, :output_path, :output_filename
       attr_accessor :output_extension, :output_type

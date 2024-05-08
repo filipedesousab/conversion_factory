@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ConversionFactory::Entities::InputFile do
+RSpec.describe ConversionFactory::Adapters::InputFile do
   let(:filename) { 'text-plain' }
   let(:file_path) { "spec/fixtures/#{filename}.html" }
 

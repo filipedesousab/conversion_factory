@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ConversionFactory
-  module Entities
+  module Adapters
     class Performer
       attr_accessor :converter, :output_extension, :output_type
       attr_reader   :output_path
