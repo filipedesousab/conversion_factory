@@ -166,15 +166,19 @@ RSpec.describe ConversionFactory do
     end
 
     context 'when passed a performer with params' do
+      let(:output_prefix) { 'prefix-' }
+      let(:output_sufix) { '-sufix' }
       let(:conversion_factory) do
         described_class.build(input_files: [{ file: input_file_path, output_filename: output_filename }],
                               performers: [{ converter: converter, output_path: output_path,
-                                             output_extension: output_extension, output_type: output_type }])
+                                             output_extension: output_extension, output_prefix: output_prefix,
+                                             output_sufix: output_sufix, output_type: output_type }])
       end
 
       it do
         message = converter.generate_message(input_file_path: input_file_path, output_path: output_path,
                                              output_filename: output_filename, output_extension: output_extension,
+                                             output_prefix: output_prefix, output_sufix: output_sufix,
                                              output_type: output_type)
 
         expect { conversion_factory.run }.to output(a_string_including(message)).to_stdout

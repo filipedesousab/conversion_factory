@@ -45,18 +45,20 @@ Arguments expected by `input_files`
 |----------------|-----------------------------------------------------------------------|--------|--------------------|
 |file            |File to be converted                                                   |true    |[String \| Pathname]|
 |content_type    |MIME type of the file. When not defined, it is automatically identified|false   |String              |
-|output_path     |File output path                                                       |false   |[String \| Pathname]|
+|output_path     |Generated file output path                                             |false   |[String \| Pathname]|
 |output_filename |Generated file name                                                    |false   |String              |
 |output_extension|Generated file extension                                               |false   |String              |
 |output_type     |Generated file type                                                    |false   |String              |
 
 Arguments expected by `performers`
-|Argument        |Description          |Required|Accepted types      |
-|----------------|---------------------|--------|--------------------|
-|converter       |Converter to be used |true    |Converter Object    |
-|output_path     |File output path     |false   |[String \| Pathname]|
-|output_extension|File output extension|false   |String              |
-|output_type     |File output type     |false   |String              |
+|Argument        |Description           |Required|Accepted types      |
+|----------------|----------------------|--------|--------------------|
+|converter       |Converter to be used  |true    |Converter Object    |
+|output_path     |File output path      |false   |[String \| Pathname]|
+|output_extension|File output extension |false   |String              |
+|output_prefix   |Filename output prefix|false   |String              |
+|output_sufix    |Filename output sufix |false   |String              |
+|output_type     |File output type      |false   |String              |
 
 ### Errors output
 
@@ -87,8 +89,8 @@ conversion_factory.errors.to_s # ["Non existent file to path /path/to/non_existe
 
 Is possible change default values configurations.
 
-|Config         |Default value|Accepted types      |Description                                                                                                                               |
-|---------------|-------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+|Config         |Default value|Accepted types      |Description                                                                                    |
+|---------------|-------------|--------------------|-----------------------------------------------------------------------------------------------|
 |output_path    |Dir.tmpdir   |[String \| Pathname]|Output of converted files. It works globally, but will be overwritten if the output_path is defined in the performer or in the input_file|
 |raise_exception|true         |boolean             |By default, errors are generated, but it is possible to disable them through this configuration|
 
@@ -105,12 +107,25 @@ end
 
 The converter must have at least one method called `convert` that receives input, content_type, output_path and output_filename as keyword arguments.
 
-|Method                  |Required|Description                                                                                                     |
-|------------------------|--------|----------------------------------------------------------------------------------------------------------------|
-|name                    |true    |Converter name to be displayed in messages                                                                      |
-|convert                 |true    |Processes the conversion. Must receive input, content_type, output_path and output_filename as keyword arguments|
-|default_output_type     |true    |Converter default output type                                                                                   |
-|default_output_extension|true    |Converter default output extension                                                                              |
+|Method                  |Required|Description                               |
+|------------------------|--------|------------------------------------------|
+|name                    |true    |Converter name to be displayed in messages|
+|convert                 |true    |Processes the conversion                  |
+|default_output_type     |true    |Return converter default output type      |
+|default_output_extension|true    |Return converter default output extension |
+
+Required keyword arguments to `convert` method. The params is passed through the `run` method of the `Performer`.
+
+|Argument        |Accepted types|Description                                                 |
+|----------------|--------------|------------------------------------------------------------|
+|input           |Pathname      |The object is obtained from the file method of the InputFile|
+|content_type    |String        |MIME type of the input file                                 |
+|output_path     |String        |Generated file output path                                  |
+|output_extension|String        |Generated file extension                                    |
+|output_type     |String        |Generated file type                                         |
+|output_filename |String        |Generated file name                                         |
+|output_prefix   |String        |Generated filename output prefix                            |
+|output_sufix    |String        |Generated filename output sufix                             |
 
 Example of a converter
 
@@ -131,13 +146,14 @@ class HTMLToImageConverter
     'jpg'
   end
 
-  def convert(input:, content_type: nil, output_path: nil, output_filename: nil, output_extension: nil, output_type: nil)
+  def convert(input:, content_type:, output_path:, output_filename:,
+              output_extension:, output_prefix:, output_sufix:, output_type:)
     raise ConversionFactory::Errors::InvalidInputType unless ACCEPTED_INPUT_TYPES.include?(content_type.to_s)
     raise ConversionFactory::Errors::InvalidOutputType unless ACCEPTED_OUTPUT_TYPES.include?(output_type.to_s)
 
     kit = IMGKit.new(File.new(input))
     kit = kit.to_img(output_type.to_sym)
-    kit.to_file("#{output_path}/#{output_filename}.#{output_extension || output_type}")
+    kit.to_file("#{output_path}/#{output_prefix}#{output_filename}#{output_sufix}.#{output_extension || output_type}")
   end
 end
 ```
