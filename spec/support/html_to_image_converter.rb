@@ -10,8 +10,8 @@ class HTMLToImageConverter
     'HTMLToImage'
   end
 
-  def convert(input:, content_type: nil, output_path: nil, output_filename: nil, # rubocop:disable Metrics/ParameterLists
-              output_extension: nil, output_prefix: nil, output_sufix: nil, output_type: nil)
+  def convert(input:, content_type:, output_path:, output_filename:, # rubocop:disable Metrics/ParameterLists
+              output_extension:, output_prefix:, output_sufix:, output_type:)
     raise Errors::InvalidInputType unless ACCEPTED_INPUT_TYPES.include?(content_type.to_s)
     raise Errors::InvalidOutputType unless ACCEPTED_OUTPUT_TYPES.include?(output_type.to_s)
 
