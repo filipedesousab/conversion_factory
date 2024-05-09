@@ -3,13 +3,16 @@
 module ConversionFactory
   module Adapters
     class Performer
-      attr_accessor :converter, :output_extension, :output_type
+      attr_accessor :converter, :output_extension, :output_prefix, :output_sufix, :output_type
       attr_reader   :output_path
 
-      def initialize(converter: nil, output_path: nil, output_extension: nil, output_type: nil)
+      def initialize(converter: nil, output_extension: nil, output_path: nil, # rubocop:disable Metrics/ParameterLists
+                     output_prefix: nil, output_sufix: nil, output_type: nil)
         @converter = converter
         self.output_path = output_path if output_path
         @output_extension = output_extension
+        @output_prefix = output_prefix
+        @output_sufix = output_sufix
         @output_type = output_type
       end
 
@@ -24,7 +27,8 @@ module ConversionFactory
 
         converter.convert(input: input_file.file, content_type: input_file.content_type,
                           output_filename: input_file.output_filename, output_path: defined_output_path,
-                          output_extension: defined_output_extension, output_type: defined_output_type)
+                          output_extension: defined_output_extension, output_prefix: output_prefix,
+                          output_sufix: output_sufix, output_type: defined_output_type)
       end
 
       private
